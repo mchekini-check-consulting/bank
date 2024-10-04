@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Définir les niveaux de logging (TRACE, DEBUG, INFO, WARN, ERROR) -->
+    <property name="LOG_LEVEL" value="DEBUG" />
+
+    <!-- Console appender -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Root logger -->
+    <root level="${LOG_LEVEL}">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <!-- Logger spécifique pour un package -->
+    <logger name="com.bank.account" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+</configuration>

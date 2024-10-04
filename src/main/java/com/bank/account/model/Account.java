@@ -18,7 +18,7 @@ public class Account {
     @Column(precision = 15, scale = 2)
     private BigDecimal balance;
 
-    @ManyToMany
+    @ManyToOne
     @JoinColumn(name = "customer_id")
     Customer customer;
 }

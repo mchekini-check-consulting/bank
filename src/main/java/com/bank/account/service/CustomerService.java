@@ -1,7 +1,8 @@
 package com.bank.account.service;
 
 import com.bank.account.dto.CustomerDto;
-import com.bank.account.mapper.CustomerMapper;
+import com.bank.account.dto.CustomerResponseDto;
+import com.bank.account.mapper.BankMapper;
 import com.bank.account.model.Customer;
 import com.bank.account.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
@@ -13,17 +14,17 @@ import java.util.UUID;
 @Service
 public class CustomerService {
     private final CustomerRepository customerRepository;
-    private final CustomerMapper customerMapper;
+    private final BankMapper bankMapper;
 
-    public CustomerService(CustomerRepository customerRepository, CustomerMapper customerMapper) {
+    public CustomerService(BankMapper bankMapper, CustomerRepository customerRepository) {
+        this.bankMapper = bankMapper;
         this.customerRepository = customerRepository;
-        this.customerMapper = customerMapper;
     }
 
     public CustomerDto createCustomer(CustomerDto customerDto){
-        Customer customer = this.customerMapper.toEntity(customerDto);
+        Customer customer = this.bankMapper.toEntity(customerDto);
         customer.setId(UUID.randomUUID().toString());
-        return this.customerMapper.toDto(customerRepository.save(customer));
+        return this.bankMapper.toDto(customerRepository.save(customer));
     }
 
     public Optional<Customer> findCustomerByEmail(String email) {
@@ -38,16 +39,21 @@ public class CustomerService {
         return customerRepository.existsById(id);
     }
 
-    public List<Customer> searchCustomers(String name, String nameLike, String email) {
-        return customerRepository.findCustomerByCriteria(name, nameLike, email);
+    public List<CustomerResponseDto> searchCustomers(String name, String nameLike, String email) {
+        return customerRepository.findCustomerByCriteria(name, nameLike, email)
+                .stream()
+                .map(this.bankMapper::toResponseDto)
+                .toList();
     }
 
-    public Customer updateCustomer(String id, Customer customer) {
+    public CustomerDto updateCustomer(String id, CustomerDto customerDto) {
+        Customer customer = this.bankMapper.toEntity(customerDto);
         customer.setId(id);
-        return customerRepository.save(customer);
+        return this.bankMapper.toDto(customerRepository.save(customer));
     }
 
-    public Optional<Customer> getCustomerById(String id) {
-        return customerRepository.findById(id);
+    public Optional<CustomerDto> getCustomerById(String id) {
+        return customerRepository.findById(id)
+                .map(bankMapper::toDto);
     }
 }
